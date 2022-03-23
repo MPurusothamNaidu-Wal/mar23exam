@@ -34,7 +34,7 @@ const HobbyApp = () => {
   };
   const deleteHobby = (indexToDel) => {
     axios
-      .delete('/hobby/' + parseInt(indexToDel))
+      .delete('/hobby/' + indexToDel)
       .then((res) => {
         console.log(res.data);
       })
@@ -75,7 +75,7 @@ const HobbyApp = () => {
             <br />
             <button
               onClick={() => {
-                deleteHobby(`${val.id}`);
+                deleteHobby(`${val._id}`);
               }}
             >
               Delete this Hobby
