@@ -1,101 +1,190 @@
 import { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-
-const CarApp = () => {
-  let [cars, setCars] = useState([]);
-  console.log(cars);
-  useEffect(() => {
-    getCars();
-  }, []);
+const Car = () => {
+  const [car, setCar] = useState([]);
+  const [edit, setEdit] = useState(false);
+  const [updateCar, setUpdateCar] = useState({});
   const getCars = () => {
     axios
       .get('/car')
       .then((res) => {
-        setCars(res.data.results);
-        console.log('called');
+        setCar(res.data.results);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
       });
   };
-  const createTable = () => {
-    axios.get('/car/createtable');
-  };
-  const createCar = (e) => {
-    e.preventDefault();
-    let carObj = {
-      carname: e.target.carname.value,
-      price: e.target.price.value,
-      color: e.target.color.value,
-      in_stock: e.target.in_stock.value,
+  useEffect(() => {
+    getCars();
+  }, []);
+  const createCar = (event) => {
+    event.preventDefault();
+    const carObject = {
+      id: event.target.id.value,
+      carname: event.target.carname.value,
+      price: event.target.price.value,
+      color: event.target.color.value,
+      in_stock: event.target.in_stock.value,
     };
     axios
-      .post('/car', carObj)
-      .then((res) => getCars())
-      .catch((err) => console.log(err));
+      .post('/car', carObject)
+      .then((res) => {
+        getCars();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const deleteCar = (id) => {
+    axios
+      .delete('/car/' + id)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     getCars();
   };
-  const deleteCar = (carname) => {
+  const deleteAll = () => {
     axios
-      .delete('/car' + carname)
-      .then((res) => getCars())
-      .catch((e) => console.log(e));
-    getCars();
+      .get('/car/deleteall')
+      .then((res) => {
+        getCars();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-  const updateCar = (carname) => {
-    axios
-      .put('/car' + carname)
-      .then((res) => getCars())
-      .catch((e) => console.log(e));
-    getCars();
+  const editCar = (id) => {
+    setEdit(true);
+    setUpdateCar(id);
+  };
+  const saveCar = (event) => {
+    event.preventDefault();
+    const carObject = {
+      carname: event.target.carname.value,
+      price: event.target.price.value,
+      color: event.target.color.value,
+      in_stock: event.target.in_stock.value,
+    };
+    axios.put(`/car/${updateCar}`, carObject).then((res) => {
+      getCars();
+      setEdit(false);
+      console.log(res.data);
+    });
   };
   return (
     <div>
-      {createTable()}
-      <form className='todo' onSubmit={createCar}>
-        <h3>Car Name:</h3>
-        <input type='text' name='carname' placeholder='Enter Car Name ...' />
-        <h3>Car Price:</h3>
-        <input type='number' name='price' placeholder='Enter Price' />
-        <h3>Car Colour:</h3>
-        <select className='form-select' name='color'>
-          <option value='black'>Black</option>
-          <option value='blue'>Blue</option>
-          <option value='grey'>Grey</option>
-        </select>
-        <h3>Availability:</h3>
-        <select className='form-select' name='in_stock'>
-          <option value={1}>Available</option>
-          <option value={0}>Not Availabile</option>
-        </select>
-        <button>Submit</button>
-      </form>
-      {cars.map((val, index) => {
-        return (
+      {edit ? (
+        <div>
+          <h1>Update Car</h1>
+          <form className='todo' onSubmit={saveCar}>
+            <h3>Car Name:</h3>
+            <input
+              type='text'
+              name='carname'
+              placeholder='Enter Car Name ...'
+            />
+            <h3>Car Price:</h3>
+            <input type='number' name='price' placeholder='Enter Price' />
+            <h3>Car Colour:</h3>
+            <select className='form-select' name='color'>
+              <option value='black'>Black</option>
+              <option value='blue'>Blue</option>
+              <option value='grey'>Grey</option>
+            </select>
+            <h3>Availability:</h3>
+            <select className='form-select' name='in_stock'>
+              <option value={1}>Available</option>
+              <option value={0}>Not Availabile</option>
+            </select>
+            <button>Submit</button>
+          </form>
+        </div>
+      ) : (
+        <div>
+          <h1>Car Details</h1>
+          <form className='todo' onSubmit={createCar}>
+            <b>Car Id : </b>
+            <input type='number' name='id' placeholder='Enter Car Id' />
+            <br />
+            <b className='subHeading'>Car Name : </b>
+            <input type='text' name='carname' placeholder='Enter Car Name' />
+            <br />
+            <b className='subHeading'>Price : </b>
+            <input type='number' name='price' placeholder='Enter Car Price' />
+            <br />
+            <b className='subHeading'>Car Color : </b>
+            <select name='color'>
+              <option selected>Select</option>
+              <option value='Black'>Black</option>
+              <option value='Blue'>Blue</option>
+              <option value='Grey'>Grey</option>
+            </select>
+            <br />
+            <b>In Stock : </b>
+            <input type='radio' name='in_stock' value='1' />
+            Available
+            <br />
+            <input type='radio' name='in_stock' value='0' />
+            Unavailable
+            <br />
+            <button className='btn btn-outline-primary'>
+              <b>Add Car</b>
+            </button>
+            <br />
+          </form>
+          <button onClick={deleteAll}>
+            <b>Delete All</b>
+          </button>
+          <br />
           <div>
-            <h3>{val.carname}</h3>
-            <p>{val.price}</p>
-            <p>{val.color}</p>
-            <p>{val.in_stock}</p>
-            <button
-              className='btn btn-warning'
-              onClick={() => {
-                deleteCar(val.carname);
-              }}
-            >
-              del
-            </button>
-            <button
-              className='btn btn-warning'
-              onClick={() => updateCar(val.carname)}
-            >
-              Edit
-            </button>
+            <table>
+              <tr>
+                <th>Id</th>
+                <th>Car Name</th>
+                <th>Price</th>
+                <th>Color</th>
+                <th>In Stock</th>
+                <th>Delete</th>
+                <th>Update</th>
+              </tr>
+              {car.map((val, index) => {
+                return (
+                  <tr>
+                    <td>{val.id}</td>
+                    <td>{val.carname}</td>
+                    <td>{val.price}</td>
+                    <td>{val.color}</td>
+                    <td>{val.in_stock}</td>
+                    <td>
+                      <button
+                        onClick={() => {
+                          deleteCar(val.id);
+                        }}
+                      >
+                        <b> Delete</b>
+                      </button>
+                      <br />
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => {
+                          editCar(val.id);
+                        }}
+                      >
+                        <b> Edit</b>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </table>
           </div>
-        );
-      })}
+        </div>
+      )}
     </div>
   );
 };
-export default CarApp;
+export default Car;
