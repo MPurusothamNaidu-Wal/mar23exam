@@ -140,47 +140,36 @@ const Car = () => {
           </button>
           <br />
           <div>
-            <table>
-              <tr>
-                <th>Id</th>
-                <th>Car Name</th>
-                <th>Price</th>
-                <th>Color</th>
-                <th>In Stock</th>
-                <th>Delete</th>
-                <th>Update</th>
-              </tr>
-              {car.map((val, index) => {
-                return (
-                  <tr>
-                    <td>{val.id}</td>
-                    <td>{val.carname}</td>
-                    <td>{val.price}</td>
-                    <td>{val.color}</td>
-                    <td>{val.in_stock}</td>
-                    <td>
-                      <button
-                        onClick={() => {
-                          deleteCar(val.id);
-                        }}
-                      >
-                        <b> Delete</b>
-                      </button>
-                      <br />
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => {
-                          editCar(val.id);
-                        }}
-                      >
-                        <b> Edit</b>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </table>
+            {car.map((val, index) => {
+              return (
+                <div>
+                  <h5>{val.id}</h5>
+                  <h5>{val.carname}</h5>
+                  <h5>{val.price}</h5>
+                  <h5>{val.color}</h5>
+                  <h5>{val.in_stock}</h5>
+                  <h5>
+                    <button
+                      onClick={() => {
+                        deleteCar(val.id);
+                      }}
+                    >
+                      <b> Delete</b>
+                    </button>
+                    <br />
+                  </h5>
+                  <h5>
+                    <button
+                      onClick={() => {
+                        editCar(val.id);
+                      }}
+                    >
+                      <b> Edit</b>
+                    </button>
+                  </h5>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
