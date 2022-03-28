@@ -41,6 +41,7 @@ var twitterRouter = require('./routes/twitter');
 var mysqlRoutter = require('./routes/mysql');
 var AuthorRouter = require('./routes/author');
 var TodosRoutter = require('./routes/todo');
+var carRouter = require('./routes/car');
 var app = express();
 
 // view engine setup
@@ -53,6 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', carRouter);
 app.use('/', indexRouter);
 app.use('/user', UserRouter);
 app.use('/users', usersRouter);
